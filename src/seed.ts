@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { User } from './app/modules/auth/auth.model';
 import { Job } from './app/modules/job/job.model';
+import { Review } from './app/modules/review/review.model';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const seed = async () => {
     // Clear existing data
     await User.deleteMany({});
     await Job.deleteMany({});
+    await Review.deleteMany({});
     console.log('✔ Existing data cleared');
 
     // Create demo users
@@ -55,7 +57,9 @@ const seed = async () => {
     console.log('✔ Demo users seeded successfully');
 
     const employer = createdUsers.find((u) => u.role === 'employer');
-    if (!employer) throw new Error('Employer not found');
+    const jobseeker = createdUsers.find((u) => u.role === 'jobseeker');
+    
+    if (!employer || !jobseeker) throw new Error('Demo users not found');
 
     const demoJobs = [
       {
@@ -228,97 +232,73 @@ const seed = async () => {
         isFeatured: false,
         createdBy: (employer as any)._id,
       },
-      {
-        title: 'Healthcare Analyst',
-        company: 'HealthWise',
-        location: 'Hybrid',
-        locationType: 'Hybrid',
-        type: 'Full-time',
-        category: 'Healthcare',
-        salary: { min: 70000, max: 90000, currency: 'USD', period: 'yearly' },
-        description: 'Analyze patient data to improve outcomes.',
-        requirements: ['Health informatics degree', 'SQL proficiency'],
-        responsibilities: ['Compliance reports', 'Data visualization'],
-        skills: ['Tableau', 'SQL', 'HL7'],
-        experience: 'Mid Level',
-        deadline: new Date('2026-02-25'),
-        isFeatured: false,
-        createdBy: (employer as any)._id,
-      },
-      {
-        title: 'Education Coordinator',
-        company: 'Global Academy',
-        location: 'On-site',
-        locationType: 'On-site',
-        type: 'Full-time',
-        category: 'Education',
-        salary: { min: 50000, max: 70000, currency: 'USD', period: 'yearly' },
-        description: 'Manage diverse educational programs.',
-        requirements: ['Organized', 'LMS experience preferred'],
-        responsibilities: ['Student guidance', 'Curriculum management'],
-        skills: ['Moodle', 'Student Relations'],
-        experience: 'Entry Level',
-        deadline: new Date('2026-01-20'),
-        isFeatured: false,
-        createdBy: (employer as any)._id,
-      },
-      {
-        title: 'Sales Representative',
-        company: 'DealDazzle',
-        location: 'Remote',
-        locationType: 'Remote',
-        type: 'Full-time',
-        category: 'Sales',
-        salary: { min: 50000, max: 120000, currency: 'USD', period: 'yearly' },
-        description: 'Close deals for our premium B2B software.',
-        requirements: ['B2B experience', 'Persistence'],
-        responsibilities: ['Cold calling', 'Closing sales'],
-        skills: ['Salesforce', 'CRM', 'negotiation'],
-        experience: 'Entry Level',
-        deadline: new Date('2026-01-15'),
-        isFeatured: true,
-        createdBy: (employer as any)._id,
-      },
-      {
-        title: 'Legal Counsel',
-        company: 'LawLink',
-        location: 'On-site',
-        locationType: 'On-site',
-        type: 'Full-time',
-        category: 'Legal',
-        salary: { min: 140000, max: 180000, currency: 'USD', period: 'yearly' },
-        description: 'Navigate our corporate legal needs.',
-        requirements: ['JD required', 'Corporate law experience'],
-        responsibilities: ['Contract review', 'Compliance monitoring'],
-        skills: ['Law', 'Risk Assessment', 'Contracts'],
-        experience: 'Executive',
-        deadline: new Date('2025-12-30'),
-        isFeatured: true,
-        createdBy: (employer as any)._id,
-      },
-      {
-        title: 'Intern Backend Developer',
-        company: 'StarterHub',
-        location: 'Remote',
-        locationType: 'Remote',
-        type: 'Internship',
-        category: 'Technology',
-        salary: { min: 2000, max: 3000, currency: 'USD', period: 'monthly' },
-        description: 'Learn Node.js/Mongoose by helping on production tasks.',
-        requirements: ['Students only', 'Passionate about JS'],
-        responsibilities: ['Assist in bug fixing', 'Write clean documentation'],
-        skills: ['Express', 'JavaScript'],
-        experience: 'Entry Level',
-        deadline: new Date('2025-12-15'),
-        isFeatured: false,
-        createdBy: (employer as any)._id,
-      },
     ];
 
     for (const jobData of demoJobs) {
       await Job.create(jobData);
     }
     console.log('✔ Demo jobs seeded successfully');
+
+    const demoReviews = [
+      {
+        companyName: 'TechFlow Inc',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 5,
+        title: 'Excellent Innovation Culture',
+        comment: 'Amazing place to work at. The technology stack is modern and management is very supportive. Highly recommended for devs.',
+        pros: 'Supportive management, good pay, remote focus',
+        cons: 'Rapid pace can be challenging sometimes',
+        isVerified: true,
+      },
+      {
+        companyName: 'Creative Studio',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 4,
+        title: 'Great Design Environment',
+        comment: 'The projects are diverse and interesting. Good work-life balance for designers. The tools provided are top-notch.',
+        pros: 'Creative freedom, diverse projects',
+        cons: 'Sometimes client deadlines are tight',
+        isVerified: true,
+      },
+      {
+        companyName: 'GrowthHQ',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 3,
+        title: 'Decent but high pressure',
+        comment: 'Good learning opportunities but the sales pressure is high. Office environment is competitive but friendly.',
+        pros: 'Learning curve, nice colleagues',
+        cons: 'High performance targets',
+      },
+      {
+        companyName: 'DataMind Corp',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 5,
+        title: 'A data scientist heaven',
+        comment: 'Vast datasets and high-end infrastructure for ML. If you love data, this is the place to be.',
+        pros: 'Infrasture, interesting datasets',
+        cons: 'None so far',
+        isVerified: true,
+      },
+      {
+        companyName: 'CloudBase',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 4,
+        title: 'Strictly Remote & Productive',
+        comment: 'Best remote environment I have experienced. Very efficient communication protocols and great DevOps tools.',
+        pros: 'Remote first, efficient tools',
+        cons: 'Limited on-site interaction',
+      },
+    ];
+
+    for (const reviewData of demoReviews) {
+      await Review.create(reviewData);
+    }
+    console.log('✔ Demo reviews seeded successfully');
 
     await mongoose.disconnect();
     console.log('✔ Disconnected from MongoDB');

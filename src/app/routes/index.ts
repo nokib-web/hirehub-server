@@ -4,6 +4,9 @@ import { JobRoutes } from '../modules/job/job.routes';
 import { ApplicationRoutes } from '../modules/application/application.routes';
 import { ReviewRoutes } from '../modules/review/review.routes';
 
+import { DashboardRoutes } from '../modules/dashboard/dashboard.routes';
+import { AIRoutes } from '../modules/ai/ai.routes';
+
 const router = express.Router();
 
 const moduleRoutes = [
@@ -22,6 +25,14 @@ const moduleRoutes = [
   {
     path: '/reviews',
     route: ReviewRoutes,
+  },
+  {
+    path: '/dashboard',
+    route: DashboardRoutes,
+  },
+  {
+    path: '/ai',
+    route: AIRoutes,
   },
 ];
 

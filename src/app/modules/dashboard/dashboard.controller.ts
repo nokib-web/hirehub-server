@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { User } from '../auth/auth.model';
+import { User } from '../user/user.model';
 import { Job } from '../job/job.model';
 import { Application } from '../application/application.model';
 

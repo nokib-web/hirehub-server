@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { User } from './app/modules/auth/auth.model';
+import { User } from './app/modules/user/user.model';
 import { Job } from './app/modules/job/job.model';
 import { Review } from './app/modules/review/review.model';
+import { Application } from './app/modules/application/application.model';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const seed = async () => {
     await User.deleteMany({});
     await Job.deleteMany({});
     await Review.deleteMany({});
+    await Application.deleteMany({});
     console.log('✔ Existing data cleared');
 
     // Create demo users
@@ -141,7 +143,7 @@ const seed = async () => {
         description: 'Help steer our investments through rigorous analysis.',
         requirements: ['CFA preferred', 'Excel modeling skills'],
         responsibilities: ['Prepare forecasts', 'Analyze market trends'],
-        skills: ['Excel', '财务报表', 'Risk Assessment'],
+        skills: ['Excel', 'Risk Assessment'],
         experience: 'Mid Level',
         deadline: new Date('2026-08-15'),
         isFeatured: false,
@@ -232,12 +234,117 @@ const seed = async () => {
         isFeatured: false,
         createdBy: (employer as any)._id,
       },
+      {
+        title: 'Backend Engineer',
+        company: 'NodeLogic',
+        location: 'Remote',
+        locationType: 'Remote',
+        type: 'Contract',
+        category: 'Engineering',
+        salary: { min: 90000, max: 120000, currency: 'USD', period: 'yearly' },
+        description: 'Develop scalable microservices for our logistics platform.',
+        requirements: ['Node.js expert', 'Microservices experience'],
+        responsibilities: ['API design', 'DB optimization'],
+        skills: ['Node.js', 'Express', 'Redis'],
+        experience: 'Mid Level',
+        deadline: new Date('2026-02-15'),
+        isFeatured: true,
+        createdBy: (employer as any)._id,
+      },
+      {
+        title: 'Social Media Strategist',
+        company: 'ViralVibe',
+        location: 'Hybrid',
+        locationType: 'Hybrid',
+        type: 'Full-time',
+        category: 'Marketing',
+        salary: { min: 50000, max: 70000, currency: 'USD', period: 'yearly' },
+        description: 'Grow our presence on TikTok and LinkedIn.',
+        requirements: ['Content creation skills', 'Analytics focus'],
+        responsibilities: ['Post scheduling', 'Community engagement'],
+        skills: ['TikTok', 'Analytics', 'Copywriting'],
+        experience: 'Entry Level',
+        deadline: new Date('2026-01-20'),
+        isFeatured: false,
+        createdBy: (employer as any)._id,
+      },
+      {
+        title: 'Sales Executive',
+        company: 'DealFlow',
+        location: 'On-site',
+        locationType: 'On-site',
+        type: 'Full-time',
+        category: 'Sales',
+        salary: { min: 50000, max: 120000, currency: 'USD', period: 'yearly' },
+        description: 'Drive revenue growth through B2B sales.',
+        requirements: ['Track record of meeting targets', 'B2B experience'],
+        responsibilities: ['Lead generation', 'Client meetings'],
+        skills: ['Negotiation', 'CRM', 'Public Speaking'],
+        experience: 'Mid Level',
+        deadline: new Date('2026-12-15'),
+        isFeatured: false,
+        createdBy: (employer as any)._id,
+      },
+      {
+        title: 'Legal Counsel',
+        company: 'JurisTech',
+        location: 'Hybrid',
+        locationType: 'Hybrid',
+        type: 'Full-time',
+        category: 'Legal',
+        salary: { min: 140000, max: 180000, currency: 'USD', period: 'yearly' },
+        description: 'Manage IP and contractual legal matters.',
+        requirements: ['JD degree', 'Tech industry background'],
+        responsibilities: ['Review contracts', 'Advise on compliance'],
+        skills: ['Law', 'Contracts', 'IP'],
+        experience: 'Senior Level',
+        deadline: new Date('2026-11-01'),
+        isFeatured: false,
+        createdBy: (employer as any)._id,
+      },
+      {
+        title: 'Accountant',
+        company: 'NumCrunch',
+        location: 'On-site',
+        locationType: 'On-site',
+        type: 'Full-time',
+        category: 'Finance',
+        salary: { min: 60000, max: 75000, currency: 'USD', period: 'yearly' },
+        description: 'Ensure accurate financial records and tax filing.',
+        requirements: ['CPA license', '2+ years exp'],
+        responsibilities: ['Ledger management', 'Audits'],
+        skills: ['Accounting', 'Taxation', 'Quickbooks'],
+        experience: 'Mid Level',
+        deadline: new Date('2026-10-10'),
+        isFeatured: false,
+        createdBy: (employer as any)._id,
+      },
     ];
 
+    const createdJobs = [];
     for (const jobData of demoJobs) {
-      await Job.create(jobData);
+      const job = await Job.create(jobData);
+      createdJobs.push(job);
     }
-    console.log('✔ Demo jobs seeded successfully');
+    console.log('✔ 15 Demo jobs seeded successfully');
+
+    const statuses = ['pending', 'reviewed', 'shortlisted', 'rejected', 'hired'];
+    console.log('✔ Seeding 10 applications...');
+    for (let i = 0; i < 10; i++) {
+      await Application.create({
+        jobId: createdJobs[i]._id,
+        userId: (jobseeker as any)._id,
+        resumeUrl: 'https://example.com/resume.pdf',
+        coverLetter: 'I am very interested in this position and believe I have the necessary skills to excel in this role. I have over 5 years of experience in the field and have worked with similar technologies.',
+        portfolioUrl: 'https://myportfolio.com',
+        expectedSalary: 80000 + i * 2000,
+        status: statuses[i % statuses.length],
+        appliedAt: new Date(Date.now() - i * 86400000), // Random historical dates
+      });
+      // Increment applicantsCount on job
+      await Job.findByIdAndUpdate(createdJobs[i]._id, { $inc: { applicantsCount: 1 } });
+    }
+    console.log('✔ 10 applications seeded successfully');
 
     const demoReviews = [
       {
@@ -293,15 +400,65 @@ const seed = async () => {
         pros: 'Remote first, efficient tools',
         cons: 'Limited on-site interaction',
       },
+      {
+        companyName: 'LaunchPad',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 5,
+        title: 'Great PM role',
+        comment: 'Fast growing company with lots of ownership.',
+        pros: 'Ownership, equity, smart team',
+        cons: 'Long hours',
+      },
+      {
+        companyName: 'PeopleFirst',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 4,
+        title: 'Good HR foundation',
+        comment: 'Nice place to start a career in people management.',
+        pros: 'Culture, benefits',
+        cons: 'Traditional hierarchy',
+      },
+      {
+        companyName: 'WebCraft',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 5,
+        title: 'Modern and flexible',
+        comment: 'Love the remote flexibility and modern React stack.',
+        pros: 'Tech stack, flexibility',
+        cons: 'None',
+      },
+      {
+        companyName: 'NumCrunch',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 3,
+        title: 'Classic accounting firm',
+        comment: 'Reliable job but not very exciting.',
+        pros: 'Stability',
+        cons: 'Old tools',
+      },
+      {
+        companyName: 'ViralVibe',
+        companyId: (employer as any)._id,
+        reviewerId: (jobseeker as any)._id,
+        rating: 4,
+        title: 'Energetic startup',
+        comment: 'Great if you like social media and high energy.',
+        pros: 'Energy, growth',
+        cons: 'Chaotic processes',
+      },
     ];
 
     for (const reviewData of demoReviews) {
       await Review.create(reviewData);
     }
-    console.log('✔ Demo reviews seeded successfully');
+    console.log('✔ 10 demo reviews seeded successfully');
 
+    console.log('✅ Database seeded successfully!');
     await mongoose.disconnect();
-    console.log('✔ Disconnected from MongoDB');
     process.exit(0);
   } catch (error) {
     console.error('✘ Seeding failed:', error);

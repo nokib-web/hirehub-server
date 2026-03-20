@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import AppError from '../utils/AppError';
-import { User } from '../modules/auth/auth.model';
+import { User } from '../modules/user/user.model';
 
 // Extend Express Request type
 declare global {

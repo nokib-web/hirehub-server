@@ -97,9 +97,28 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  const user = await AuthService.getUserProfile((req as any).user.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Profile fetched successfully',
+    data: {
+      id: (user as any)._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      headline: user.headline,
+      avatar: user.avatar,
+      skills: user.skills,
+    },
+  });
+});
+
 export const AuthController = {
   register,
   login,
   refreshToken,
   logout,
+  getProfile,
 };

@@ -10,5 +10,6 @@ router.post('/register', registerValidation, AuthController.register);
 router.post('/login', loginValidation, AuthController.login);
 router.post('/refresh-token', AuthController.refreshToken);
 router.post('/logout', auth(), AuthController.logout);
+router.get('/profile', auth(), AuthController.getProfile);
 
 export const AuthRoutes = router;

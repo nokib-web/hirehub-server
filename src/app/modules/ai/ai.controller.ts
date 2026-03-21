@@ -65,9 +65,27 @@ const getResumeTips = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const generateReviewSummary = catchAsync(async (req: Request, res: Response) => {
+  const { companyId } = req.body;
+  // In a real app, fetch reviews for this company first
+  const reviews = [
+    { rating: 5, comment: "Amazing culture and growth opportunities." },
+    { rating: 4, comment: "Great benefits but can be high pressure sometimes." }
+  ];
+  const summary = await AIService.generateReviewSummary(companyId, reviews);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Review summary generated successfully',
+    data: summary,
+  });
+});
+
 export const AIController = {
   chat,
   generateJobDescription,
   improveCoverLetter,
   getResumeTips,
+  generateReviewSummary,
 };

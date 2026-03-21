@@ -120,9 +120,27 @@ Return ONLY valid JSON.`;
   }
 };
 
+const generateReviewSummary = async (companyName: string, reviews: any[]) => {
+  try {
+    const reviewsText = reviews.map(r => `[Rating: ${r.rating}/5, Comment: ${r.comment}]`).join('\n');
+    const prompt = `Summarize the employee reviews for ${companyName} into a concise, professional 2-3 sentence paragraph. 
+Highlight the main pros mentioned and any common concerns if they exist. 
+Reviews:
+${reviewsText}
+Return ONLY the summary text.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error: any) {
+    throw new AppError(500, `Gemini API Error: ${error.message}`);
+  }
+};
+
 export const AIService = {
   chat,
   generateJobDescription,
   improveCoverLetter,
   getResumeTips,
+  generateReviewSummary,
 };

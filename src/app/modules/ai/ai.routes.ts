@@ -22,5 +22,6 @@ router.post('/chat', AIController.chat);
 router.post('/generate-job-description', AIController.generateJobDescription);
 router.post('/improve-cover-letter', AIController.improveCoverLetter);
 router.post('/resume-tips', AIController.getResumeTips);
+router.post('/review-summary', AIController.generateReviewSummary);
 
 export const AIRoutes = router;

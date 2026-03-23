@@ -31,7 +31,7 @@ const authLimiter = rateLimit({
   message: 'Too many auth attempts, please try again after 15 minutes',
 });
 
-// Middleware
+// Middleware route
 app.use(helmet());
 app.use(
   cors({

@@ -1,7 +1,11 @@
 import OpenAI from 'openai';
 import AppError from '../../utils/AppError';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
+const grok = new OpenAI({ 
+  apiKey: process.env.GROK_API_KEY || '', 
+  baseURL: process.env.GROK_BASE_URL || 'https://models.inference.ai.azure.com'
+});
+const MODEL = process.env.GROK_MODEL || 'grok-3-mini';
 
 const SYSTEM_PROMPT = `You are a professional career assistant for a job recruitment platform called HireHub. 
 Help users with: job search advice, resume tips, interview preparation, career guidance, 
@@ -22,8 +26,8 @@ const chat = async (
       { role: 'user', content: message },
     ];
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+    const completion = await grok.chat.completions.create({
+      model: MODEL,
       messages,
       max_tokens: 1000,
       temperature: 0.7,
@@ -31,7 +35,7 @@ const chat = async (
 
     return completion.choices[0]?.message?.content || 'No response generated.';
   } catch (error: any) {
-    throw new AppError(500, `OpenAI API Error: ${error.message}`);
+    throw new AppError(500, `Grok API Error: ${error.message}`);
   }
 };
 
@@ -49,8 +53,8 @@ Include: 3-paragraph overview, 6 key responsibilities (as array),
 6 requirements (as array), 5 required skills (as array). 
 Return ONLY valid JSON with keys: description, responsibilities, requirements, skills`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+    const completion = await grok.chat.completions.create({
+      model: MODEL,
       messages: [
         { role: 'system', content: 'You are a professional job description writer. Always return valid JSON only.' },
         { role: 'user', content: prompt },
@@ -68,7 +72,7 @@ Return ONLY valid JSON with keys: description, responsibilities, requirements, s
       throw new AppError(500, 'Failed to generate structured job description. AI returned invalid format.');
     }
   } catch (error: any) {
-    throw new AppError(500, `OpenAI API Error: ${error.message}`);
+    throw new AppError(500, `Grok API Error: ${error.message}`);
   }
 };
 
@@ -78,8 +82,8 @@ const improveCoverLetter = async (data: {
   company: string;
 }) => {
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+    const completion = await grok.chat.completions.create({
+      model: MODEL,
       messages: [
         {
           role: 'system',
@@ -98,7 +102,7 @@ Original: ${data.coverLetter}`,
 
     return completion.choices[0]?.message?.content || '';
   } catch (error: any) {
-    throw new AppError(500, `OpenAI API Error: ${error.message}`);
+    throw new AppError(500, `Grok API Error: ${error.message}`);
   }
 };
 
@@ -108,8 +112,8 @@ const getResumeTips = async (data: {
   experience: string;
 }) => {
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+    const completion = await grok.chat.completions.create({
+      model: MODEL,
       messages: [
         {
           role: 'system',
@@ -135,7 +139,7 @@ Return as JSON array: [{ "tip": string, "explanation": string }]`,
       throw new AppError(500, 'Failed to generate resume tips. AI returned invalid format.');
     }
   } catch (error: any) {
-    throw new AppError(500, `OpenAI API Error: ${error.message}`);
+    throw new AppError(500, `Grok API Error: ${error.message}`);
   }
 };
 
@@ -143,8 +147,8 @@ const generateReviewSummary = async (companyName: string, reviews: any[]) => {
   try {
     const reviewsText = reviews.map((r) => `[Rating: ${r.rating}/5, Comment: ${r.comment}]`).join('\n');
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+    const completion = await grok.chat.completions.create({
+      model: MODEL,
       messages: [
         {
           role: 'system',
@@ -163,7 +167,7 @@ Reviews:\n${reviewsText}`,
 
     return completion.choices[0]?.message?.content || '';
   } catch (error: any) {
-    throw new AppError(500, `OpenAI API Error: ${error.message}`);
+    throw new AppError(500, `Grok API Error: ${error.message}`);
   }
 };
 

@@ -27,7 +27,7 @@ async function bootstrap() {
   }
 }
 
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', (error: any) => {
   console.log('Unhandled Rejection detected, shutting down server...');
   if (server) {
     server.close(() => {
@@ -39,7 +39,7 @@ process.on('unhandledRejection', (error) => {
   }
 });
 
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', (error: any) => {
   console.log('Uncaught Exception detected, shutting down server...');
   console.error(error);
   process.exit(1);

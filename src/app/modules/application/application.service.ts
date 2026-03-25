@@ -44,7 +44,7 @@ const getAllApplications = async (query: any, user: { id: string; role: string }
   } else if (user.role === 'employer') {
     // Employer gets applications for their jobs only
     const employerJobs = await Job.find({ createdBy: user.id }).select('_id');
-    const jobIds = employerJobs.map((job) => job._id);
+    const jobIds = employerJobs.map((job: any) => job._id);
     filters.jobId = { $in: jobIds };
   } else if (user.role === 'jobseeker') {
     // Jobseeker gets own applications

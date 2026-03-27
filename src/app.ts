@@ -35,7 +35,7 @@ const authLimiter = rateLimit({
 app.use(helmet());
 app.use(
   cors({
-    origin: ['http://localhost:3000', process.env.FRONTEND_URL as string],
+    origin: ['http://localhost:3000', process.env.FRONTEND_URL as string, 'https://hirehub-client-five.vercel.app'],
     credentials: true,
   })
 );

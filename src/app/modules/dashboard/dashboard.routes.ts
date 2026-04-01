@@ -4,7 +4,7 @@ import { DashboardController } from './dashboard.controller';
 
 const router = express.Router();
 
-router.get('/stats', auth('admin'), DashboardController.getStats);
-router.get('/chart-data', auth('admin'), DashboardController.getChartData);
+router.get('/stats', auth('admin', 'employer', 'jobseeker'), DashboardController.getStats);
+router.get('/chart-data', auth('admin', 'employer', 'jobseeker'), DashboardController.getChartData);
 
 export const DashboardRoutes = router;

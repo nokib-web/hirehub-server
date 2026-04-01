@@ -6,6 +6,9 @@ const router = express.Router();
 
 router.post('/', auth('employer', 'admin'), JobController.createJob);
 router.get('/', JobController.getAllJobs);
+router.get('/top-companies', JobController.getTopCompanies);
+router.get('/category-stats', JobController.getCategoryStats);
+router.get('/stats', JobController.getStats);
 router.get('/:id', JobController.getSingleJob);
 router.patch('/:id', auth('employer', 'admin'), JobController.updateJob);
 router.delete('/:id', auth('employer', 'admin'), JobController.deleteJob);

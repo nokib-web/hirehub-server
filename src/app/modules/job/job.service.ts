@@ -92,10 +92,65 @@ const deleteJob = async (id: string, userId: string, role: string) => {
   return { success: true };
 };
 
+const getTopCompanies = async () => {
+  const topCompanies = await Job.aggregate([
+    { $match: { status: 'active' } },
+    {
+      $group: {
+        _id: '$company',
+        jobsCount: { $sum: 1 },
+        category: { $first: '$category' },
+      },
+    },
+    { $sort: { jobsCount: -1 } },
+    { $limit: 6 },
+    {
+      $project: {
+        name: '$_id',
+        jobs: '$jobsCount',
+        industry: '$category',
+        _id: 0,
+      },
+    },
+  ]);
+
+  return topCompanies;
+};
+
+import { User } from '../user/user.model';
+
+const getStats = async () => {
+  const jobCount = await Job.countDocuments({ status: 'active' });
+  const companyAggregation = await Job.aggregate([
+    { $group: { _id: '$company' } },
+    { $count: 'total' }
+  ]);
+  const jobSeekerCount = await User.countDocuments({ role: 'jobseeker' });
+  
+  return {
+    jobs: jobCount,
+    companies: companyAggregation[0]?.total || 0,
+    jobSeekers: jobSeekerCount,
+    successRate: 98 // Placeholder for business logic
+  };
+};
+
+const getCategoryStats = async () => {
+  const stats = await Job.aggregate([
+    { $match: { status: 'active' } },
+    { $group: { _id: '$category', count: { $sum: 1 } } },
+    { $project: { name: '$_id', count: 1, _id: 0 } }
+  ]);
+  return stats;
+};
+
 export const JobService = {
   createJob,
   getAllJobs,
   getSingleJob,
+  getTopCompanies,
+  getCategoryStats,
+  getStats,
   updateJob,
   deleteJob,
 };

@@ -15,19 +15,23 @@ import { ApplicationRoutes } from './app/modules/application/application.routes'
 import { ReviewRoutes } from './app/modules/review/review.routes';
 import { DashboardRoutes } from './app/modules/dashboard/dashboard.routes';
 import { AIRoutes } from './app/modules/ai/ai.routes';
+import { BlogRoutes } from './app/modules/blog/blog.routes';
+import { AdminRoutes } from './app/modules/admin/admin.routes';
 
 const app: Application = express();
 
 // Rate limiting configurations
+const isDev = process.env.NODE_ENV !== 'production';
+
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per 15 minutes
+  max: isDev ? 10000 : 100, // Very high limit in development, standard in production
   message: 'Too many requests, please try again after 15 minutes',
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // limit each IP to 20 requests per 15 minutes
+  max: isDev ? 10000 : 20, // Very high limit in development, standard in production
   message: 'Too many auth attempts, please try again after 15 minutes',
 });
 
@@ -56,6 +60,8 @@ app.use('/api/applications', ApplicationRoutes);
 app.use('/api/reviews', ReviewRoutes);
 app.use('/api/dashboard', DashboardRoutes);
 app.use('/api/ai', AIRoutes);
+app.use('/api/blogs', BlogRoutes);
+app.use('/api/admin', AdminRoutes);
 
 // Root route
 app.get('/', (req: Request, res: Response) => {

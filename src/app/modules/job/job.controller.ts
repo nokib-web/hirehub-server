@@ -81,10 +81,46 @@ const deleteJob = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTopCompanies = catchAsync(async (req: Request, res: Response) => {
+  const companies = await JobService.getTopCompanies();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Top companies fetched successfully',
+    data: companies,
+  });
+});
+
+const getCategoryStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await JobService.getCategoryStats();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Category stats fetched successfully',
+    data: stats,
+  });
+});
+
+const getStats = catchAsync(async (req: Request, res: Response) => {
+  const stats = await JobService.getStats();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'General stats fetched successfully',
+    data: stats,
+  });
+});
+
 export const JobController = {
   createJob,
   getAllJobs,
   getSingleJob,
+  getTopCompanies,
+  getCategoryStats,
+  getStats,
   updateJob,
   deleteJob,
 };

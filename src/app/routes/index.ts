@@ -3,7 +3,8 @@ import { AuthRoutes } from '../modules/auth/auth.routes';
 import { JobRoutes } from '../modules/job/job.routes';
 import { ApplicationRoutes } from '../modules/application/application.routes';
 import { ReviewRoutes } from '../modules/review/review.routes';
-
+import { AdminRoutes } from '../modules/admin/admin.routes';
+import { UserRoutes } from '../modules/user/user.routes';
 import { DashboardRoutes } from '../modules/dashboard/dashboard.routes';
 import { AIRoutes } from '../modules/ai/ai.routes';
 
@@ -25,6 +26,14 @@ const moduleRoutes = [
   {
     path: '/reviews',
     route: ReviewRoutes,
+  },
+  {
+    path: '/admin',
+    route: AdminRoutes,
+  },
+  {
+    path: '/users',
+    route: UserRoutes,
   },
   {
     path: '/dashboard',

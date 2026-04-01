@@ -52,15 +52,23 @@ const getAllApplications = async (query: any, user: { id: string; role: string }
   }
 
   const applications = await Application.find(filters)
-    .populate('jobId', 'title company location')
-    .populate('userId', 'name email avatar')
+    .populate('jobId', 'title company location type salary _id')
+    .populate('userId', 'name email avatar headline')
     .sort('-appliedAt')
     .skip(skip)
-    .limit(Number(limit));
+    .limit(Number(limit))
+    .lean();
 
   const total = await Application.countDocuments(filters);
 
-  return { applications, total, page: Number(page), limit: Number(limit) };
+  // Normalize: expose job/user at top level so client pages work regardless of field name
+  const normalizedApps = applications.map((app: any) => ({
+    ...app,
+    job: app.jobId,
+    user: app.userId,
+  }));
+
+  return { applications: normalizedApps, total, page: Number(page), limit: Number(limit) };
 };
 
 const getSingleApplication = async (id: string, user: { id: string; role: string }) => {

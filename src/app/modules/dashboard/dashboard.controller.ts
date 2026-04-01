@@ -49,6 +49,9 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (user?.role === 'employer') {
+    const employerJobs = await Job.find({ createdBy: userId }).select('_id');
+    const jobIds = employerJobs.map(job => job._id);
+
     const [
       totalJobs,
       activeJobs,
@@ -58,9 +61,9 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
     ] = await Promise.all([
       Job.countDocuments({ createdBy: userId }),
       Job.countDocuments({ createdBy: userId, status: 'active' }),
-      Application.countDocuments({ employerId: userId }),
-      Application.countDocuments({ employerId: userId, status: 'pending' }),
-      Application.countDocuments({ employerId: userId, status: 'hired' }),
+      Application.countDocuments({ jobId: { $in: jobIds } }),
+      Application.countDocuments({ jobId: { $in: jobIds }, status: 'pending' }),
+      Application.countDocuments({ jobId: { $in: jobIds }, status: 'hired' }),
     ]);
 
     return sendResponse(res, {
@@ -110,7 +113,6 @@ const getChartData = catchAsync(async (req: Request, res: Response) => {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-  // Default admin logic (partially abbreviated for brevity in this first pass if needed, but I'll implement it all)
   if (user?.role === 'admin') {
     const [
       monthlyApplications,
@@ -180,15 +182,17 @@ const getChartData = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  // Employer Chart Data
   if (user?.role === 'employer') {
+    const employerJobs = await Job.find({ createdBy: userId }).select('_id');
+    const jobIds = employerJobs.map(job => job._id);
+
     const [
       monthlyApplications,
       applicationsByStatus,
       jobsByCategory,
     ] = await Promise.all([
       Application.aggregate([
-        { $match: { employerId: userId, createdAt: { $gte: oneYearAgo } } },
+        { $match: { jobId: { $in: jobIds }, createdAt: { $gte: oneYearAgo } } },
         {
           $group: {
             _id: { $dateToString: { format: '%b %Y', date: '$createdAt' } },
@@ -200,7 +204,7 @@ const getChartData = catchAsync(async (req: Request, res: Response) => {
         { $project: { _id: 0, month: '$_id', count: 1 } },
       ]),
       Application.aggregate([
-        { $match: { employerId: userId } },
+        { $match: { jobId: { $in: jobIds } } },
         { $group: { _id: '$status', count: { $sum: 1 } } },
         { $project: { _id: 0, status: '$_id', count: 1 } },
       ]),

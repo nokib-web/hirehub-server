@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { JobService } from './job.service';
+import { Job } from './job.model';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import AppError from '../../utils/AppError';
@@ -114,6 +115,19 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Returns only jobs posted by the authenticated employer
+const getMyJobs = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const jobs = await Job.find({ createdBy: userId }).sort({ createdAt: -1 }).lean();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Your jobs fetched successfully',
+    data: jobs,
+  });
+});
+
 export const JobController = {
   createJob,
   getAllJobs,
@@ -121,6 +135,7 @@ export const JobController = {
   getTopCompanies,
   getCategoryStats,
   getStats,
+  getMyJobs,
   updateJob,
   deleteJob,
 };

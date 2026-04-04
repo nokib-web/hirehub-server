@@ -115,9 +115,37 @@ const getProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const googleLogin = catchAsync(async (req: Request, res: Response) => {
+  const { user, accessToken, refreshToken } = await AuthService.googleLoginUser(req.body);
+
+  // Set refresh token cookie
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User logged in successfully with Google',
+    data: {
+      user: {
+        id: (user as any)._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      accessToken,
+    },
+  });
+});
+
 export const AuthController = {
   register,
   login,
+  googleLogin,
   refreshToken,
   logout,
   getProfile,

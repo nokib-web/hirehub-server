@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post('/register', registerValidation, AuthController.register);
 router.post('/login', loginValidation, AuthController.login);
+router.post('/google', AuthController.googleLogin);
 router.post('/refresh-token', AuthController.refreshToken);
 router.post('/logout', auth(), AuthController.logout);
 router.get('/profile', auth(), AuthController.getProfile);

@@ -93,9 +93,38 @@ const getUserProfile = async (id: string) => {
   return user;
 };
 
+const googleLoginUser = async (googleData: { email: string; name: string; image?: string }) => {
+  const { email, name, image } = googleData;
+
+  let user = await User.findOne({ email });
+  
+  if (!user) {
+    // create user
+    user = await User.create({
+      name,
+      email,
+      password: Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10) + "A1@", // dummy secure password
+      role: 'jobseeker',
+      avatar: image || '',
+    });
+  }
+
+  const payload = {
+    id: (user as any)._id.toString(),
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = signAccessToken(payload);
+  const refreshToken = signRefreshToken(payload);
+
+  return { user, accessToken, refreshToken };
+};
+
 export const AuthService = {
   registerUser,
   loginUser,
   refreshToken,
   getUserProfile,
+  googleLoginUser,
 };

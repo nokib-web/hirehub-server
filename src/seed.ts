@@ -27,7 +27,7 @@ const seed = async () => {
     // Create demo users
     const demoUsers = [
       {
-        name: 'John Seeker',
+        name: 'Nazmul Hasan Nokib',
         email: 'user@example.com',
         password: '123456',
         role: 'jobseeker',
@@ -35,7 +35,7 @@ const seed = async () => {
         skills: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
       },
       {
-        name: 'Tech Corp HR',
+        name: 'Nokib HR',
         email: 'employer@example.com',
         password: '123456',
         role: 'employer',
@@ -43,7 +43,7 @@ const seed = async () => {
         headline: 'HR Manager',
       },
       {
-        name: 'Super Admin',
+        name: 'Nokib The Admin',
         email: 'admin@example.com',
         password: '123456',
         role: 'admin',
